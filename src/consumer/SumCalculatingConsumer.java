@@ -2,8 +2,8 @@ package consumer;
 
 import util.TimestampedNumber;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
 
 import static util.Constants.FIVE_MINUTES_IN_MILLIS;
 
@@ -12,7 +12,7 @@ public class SumCalculatingConsumer implements Consumer {
     private long sum;
 
     public SumCalculatingConsumer() {
-        deque = new LinkedList<>();
+        deque = new ArrayDeque<>();
         sum = 0;
     }
 

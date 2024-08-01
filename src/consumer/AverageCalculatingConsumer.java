@@ -2,8 +2,8 @@ package consumer;
 
 import util.TimestampedNumber;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
 
 import static util.Constants.FIVE_MINUTES_IN_MILLIS;
 
@@ -11,7 +11,7 @@ public class AverageCalculatingConsumer implements Consumer{
     private final Deque<TimestampedNumber> deque;
 
     public AverageCalculatingConsumer() {
-        deque = new LinkedList<>();
+        deque = new ArrayDeque<>();
     }
 
     @Override
