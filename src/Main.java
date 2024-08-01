@@ -4,15 +4,15 @@ import consumer.SumCalculatingConsumer;
 
 public class Main {
     public static void main(String[] args) {
-        Consumer sumCalculatingConsumer = new SumCalculatingConsumer();
-        Consumer averageCalculatingConsumer = new AverageCalculatingConsumer();
+        Consumer averageCalculatingConsumer = new AverageCalculatingConsumer(),
+                sumCalculatingConsumer = new SumCalculatingConsumer();
 
         benchmarkConsumer(averageCalculatingConsumer, "AverageCalculatingConsumer");
         benchmarkConsumer(sumCalculatingConsumer, "SumCalculatingConsumer");
     }
 
     private static void benchmarkConsumer(Consumer consumer, String consumerName) {
-        int numberOfOperations = 100000000;
+        int numberOfOperations = 50_000_000;
         long startTime, endTime;
 
         // Benchmark accept method

@@ -1,8 +1,11 @@
 package consumer;
 
-import java.time.Instant;
+import util.TimestampedNumber;
+
 import java.util.Deque;
 import java.util.LinkedList;
+
+import static util.Constants.FIVE_MINUTES_IN_MILLIS;
 
 public class AverageCalculatingConsumer implements Consumer{
     private final Deque<TimestampedNumber> deque;
@@ -13,7 +16,7 @@ public class AverageCalculatingConsumer implements Consumer{
 
     @Override
     public void accept(int number) {
-        deque.addLast(new TimestampedNumber(number));
+        deque.addFirst(new TimestampedNumber(number));
         cleanUpOldEntries();
     }
 
@@ -21,25 +24,15 @@ public class AverageCalculatingConsumer implements Consumer{
     public double mean() {
         cleanUpOldEntries();
         return deque.stream()
-                .mapToInt(entry -> entry.number)
+                .mapToInt(TimestampedNumber::value)
                 .average()
                 .orElse(0.0);
     }
 
     private void cleanUpOldEntries() {
         long cutoffTime = System.currentTimeMillis() - FIVE_MINUTES_IN_MILLIS; // 5 minutes in milliseconds
-        while (!deque.isEmpty() && deque.peekFirst().timestamp.toEpochMilli() < cutoffTime) {
-            deque.pollFirst();
-        }
-    }
-
-    private static class TimestampedNumber {
-        private final int number;
-        private final Instant timestamp;
-
-        private TimestampedNumber(int number) {
-            this.number = number;
-            this.timestamp = Instant.now();
+        while (!deque.isEmpty() && deque.peekLast().timestamp().toEpochMilli() < cutoffTime) {
+            deque.removeLast();
         }
     }
 }

@@ -1,9 +1,11 @@
 package consumer;
 
-import java.time.Instant;
+import util.TimestampedNumber;
+
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.Objects;
+
+import static util.Constants.FIVE_MINUTES_IN_MILLIS;
 
 public class SumCalculatingConsumer implements Consumer {
     private final Deque<TimestampedNumber> deque;
@@ -16,7 +18,7 @@ public class SumCalculatingConsumer implements Consumer {
 
     @Override
     public void accept(int number) {
-        deque.addLast(new TimestampedNumber(number));
+        deque.addFirst(new TimestampedNumber(number));
         sum += number;
         cleanUpOldEntries();
     }
@@ -32,18 +34,13 @@ public class SumCalculatingConsumer implements Consumer {
 
     private void cleanUpOldEntries() {
         long cutoffTime = System.currentTimeMillis() - FIVE_MINUTES_IN_MILLIS;
-        while (!deque.isEmpty() && deque.peekFirst().timestamp.toEpochMilli() < cutoffTime) {
-            sum -= Objects.requireNonNull(deque.pollFirst()).number;
-        }
-    }
-
-    private static class TimestampedNumber {
-        private final int number;
-        private final Instant timestamp;
-
-        private TimestampedNumber(int number) {
-            this.number = number;
-            this.timestamp = Instant.now();
+        while (!deque.isEmpty()) {
+            var last = deque.peekLast();
+            if (last.timestamp().toEpochMilli() >= cutoffTime) {
+                break;
+            }
+            sum -= last.value();
+            deque.removeLast();
         }
     }
 }
